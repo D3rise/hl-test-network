@@ -1,1 +1,1 @@
-# hyperledger-fabric-network-from-scratch
+# Hyperledger Fabric Playground
