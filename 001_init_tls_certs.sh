@@ -17,9 +17,9 @@ done
 fabric-ca-client register -u https://$TLS_IP:$TLS_PORT --tls.certfiles $TLS_CERTFILES  --id.name orderer1-org0 --id.secret ordererpw --id.type orderer
 
 
- $ORG0_ADDRESS="0.0.0.0"
- $ORG0_PEER="7053"
- $ORG0_ADMIN="org0admin:org0adminpw"
+$ORG0_ADDRESS="0.0.0.0"
+$ORG0_PEER="7053"
+$ORG0_ADMIN="org0admin:org0adminpw"
 
 fabric-ca-client enroll -u https://$ORG0_ADMIN@$ORG0_ADDRESS:$ORG0_PORT
 fabric-ca-client register -u https://$TLS_IP:$TLS_PORT --tls.certfiles $TLS_CERTFILES --id.name orderer1-org0 --id.secret ordererpw --id.type orderer
