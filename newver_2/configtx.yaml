@@ -3,6 +3,16 @@ Organizations:
     Name: org0
     ID: org0MSP
     MSPDir: ./data/org0/msp
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+      Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+      Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
 
   - &org1
     Name: org1
@@ -11,6 +21,16 @@ Organizations:
     AnchorPeers:
       - Host: peer1-org1
         Port: 7051
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+      Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+      Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
 
   - &org2
     Name: org2
@@ -19,14 +39,34 @@ Organizations:
     AnchorPeers:
       - Host: peer1-org2
         Port: 7051
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+      Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+      Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
 
-  - &org2
+  - &org3
     Name: org3
     ID: org3MSP
     MSPDir: ./data/org3/msp
     AnchorPeers:
       - Host: peer1-org3
         Port: 7051
+    Policies:
+      Readers:
+        Type: ImplicitMeta
+        Rule: "ANY Readers"
+      Writers:
+        Type: ImplicitMeta
+        Rule: "ANY Writers"
+      Admins:
+        Type: ImplicitMeta
+        Rule: "MAJORITY Admins"
 
 Capabilities:
   Channel: &ChannelCapabilities
@@ -37,3 +77,88 @@ Capabilities:
 
   Application: &ApplicationCapabilities
     V2_0: true
+
+Orderer: &OrdererDefaults
+  OrdererType: solo
+  Organizations:
+    - *org0
+
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    # BlockValidation specifies what signatures must be included in the block
+    # from the orderer for the peer to validate it.
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+
+  Capabilities:
+    <<: *OrdererCapabilities
+
+Channel: &ChannelDefaults
+  Capabilities: *ChannelCapabilities
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    # Who may invoke the 'Broadcast' API
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+      # By default, who may modify elements at this config level
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+
+Application: &ApplicationDefaults
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+  Policies: &ApplicationDefaultPolicies
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+Profiles:
+  OrgsChannelGenesis:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *org0
+        - *org1
+        - *org2
+        - *org3
+    Consortiums:
+      Consortium:
+        Organizations:
+          - <<: *org1
+          - <<: *org2
+          - <<: *org3
+
+  OrgsChannel:
+    <<: *ChannelDefaults
+    Consortium: Consortium
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - <<: *org1
+        - <<: *org2

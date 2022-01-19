@@ -65,26 +65,22 @@ services:
 
   orderer-org0:
     container_name: orderer-org0
-    image: hyperledger/fabric-peer:2.4.1
+    image: hyperledger/fabric-orderer:2.4.1
     environment:
-      - CORE_PEER_ID=orderer-org0
-      - CORE_PEER_ADDRESS=orderer-org0:7051
-      - CORE_PEER_LOCALMSPID=org0MSP
-      - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org0/orderer/msp
-      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=guide_fabric-ca
-      - FABRIC_LOGGING_SPEC=debug
-      - CORE_PEER_GOSSIP_USELEADERELECTION=true
-      - CORE_PEER_GOSSIP_ORGLEADER=false
-      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=orderer-org0:7051
-      - CORE_PEER_GOSSIP_SKIPHANDSHAKE=true
-    working_dir: /opt/gopath/src/github.com/hyperledger/fabric/org1/peer1
+      - FABRIC_CFG_PATH=/tmp/hyperledger/org0/orderer/orderer.yaml
+      - ORDERER_HOME=/tmp/hyperledger/orderer
+      - ORDERER_HOST=orderer1-org0
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/tmp/hyperledger/org0/orderer/genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=org0MSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/tmp/hyperledger/org0/orderer/msp
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_DEBUG_BROADCASTTRACEDIR=data/logs
     volumes:
-      - /var/run:/host/var/run
       - ./data/org0/orderer:/tmp/hyperledger/org0/orderer
     networks:
       - fabric-ca
-
 
   peer1-org1:
     container_name: peer1-org1
