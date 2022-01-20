@@ -18,9 +18,6 @@ Organizations:
     Name: org1
     ID: org1MSP
     MSPDir: ./data/org1/msp
-    AnchorPeers:
-      - Host: peer1-org1
-        Port: 7051
     Policies:
       Readers:
         Type: ImplicitMeta
@@ -36,9 +33,6 @@ Organizations:
     Name: org2
     ID: org2MSP
     MSPDir: ./data/org2/msp
-    AnchorPeers:
-      - Host: peer1-org2
-        Port: 7051
     Policies:
       Readers:
         Type: ImplicitMeta
@@ -54,9 +48,6 @@ Organizations:
     Name: org3
     ID: org3MSP
     MSPDir: ./data/org3/msp
-    AnchorPeers:
-      - Host: peer1-org3
-        Port: 7051
     Policies:
       Readers:
         Type: ImplicitMeta
@@ -80,8 +71,6 @@ Capabilities:
 
 Orderer: &OrdererDefaults
   OrdererType: solo
-  Organizations:
-    - *org0
 
   Policies:
     Readers:
@@ -137,6 +126,7 @@ Application: &ApplicationDefaults
     Admins:
       Type: ImplicitMeta
       Rule: "MAJORITY Admins"
+
 Profiles:
   OrgsChannelGenesis:
     <<: *ChannelDefaults
@@ -144,15 +134,12 @@ Profiles:
       <<: *OrdererDefaults
       Organizations:
         - *org0
-        - *org1
-        - *org2
-        - *org3
     Consortiums:
       Consortium:
         Organizations:
-          - <<: *org1
-          - <<: *org2
-          - <<: *org3
+          - *org1
+          - *org2
+          - *org3
 
   OrgsChannel:
     <<: *ChannelDefaults
@@ -160,5 +147,6 @@ Profiles:
     Application:
       <<: *ApplicationDefaults
       Organizations:
-        - <<: *org1
-        - <<: *org2
+        - *org1
+        - *org2
+        - *org3

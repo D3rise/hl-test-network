@@ -104,7 +104,7 @@ tls:
 #
 #############################################################################
 csr:
-  cn: orderer
+  cn: orderer-org0
   keyrequest:
     algo: ecdsa
     size: 256

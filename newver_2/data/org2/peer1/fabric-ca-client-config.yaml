@@ -40,7 +40,7 @@
 #############################################################################
 
 # URL of the Fabric-ca-server (default: http://localhost:7054)
-url: http://0.0.0.0:7054
+url: http://0.0.0.0:7055
 
 # Membership Service Provider (MSP) directory
 # This is useful when the client is used to enroll a peer or orderer, so
@@ -104,7 +104,7 @@ tls:
 #
 #############################################################################
 csr:
-  cn: peer
+  cn: peer1
   keyrequest:
     algo: ecdsa
     size: 256

@@ -67,16 +67,7 @@ services:
     container_name: orderer-org0
     image: hyperledger/fabric-orderer:2.4.1
     environment:
-      - FABRIC_CFG_PATH=/tmp/hyperledger/org0/orderer/orderer.yaml
-      - ORDERER_HOME=/tmp/hyperledger/orderer
-      - ORDERER_HOST=orderer1-org0
-      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
-      - ORDERER_GENERAL_GENESISMETHOD=file
-      - ORDERER_GENERAL_GENESISFILE=/tmp/hyperledger/org0/orderer/genesis.block
-      - ORDERER_GENERAL_LOCALMSPID=org0MSP
-      - ORDERER_GENERAL_LOCALMSPDIR=/tmp/hyperledger/org0/orderer/msp
-      - ORDERER_GENERAL_LOGLEVEL=debug
-      - ORDERER_DEBUG_BROADCASTTRACEDIR=data/logs
+      - FABRIC_CFG_PATH=/tmp/hyperledger/org0/orderer
     volumes:
       - ./data/org0/orderer:/tmp/hyperledger/org0/orderer
     networks:
@@ -147,6 +138,73 @@ services:
       - ./data/org3/peer1:/tmp/hyperledger/org3/peer1
     networks:
       - fabric-ca
+
+  cli-org1:
+   container_name: cli-org1
+   image: hyperledger/fabric-tools:2.4.1
+   tty: true
+   stdin_open: true
+   environment:
+     - GOPATH=/opt/gopath
+     - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+     - FABRIC_LOGGING_SPEC=DEBUG
+     - CORE_PEER_ID=cli-org1
+     - CORE_PEER_ADDRESS=peer1-org1:7051
+     - CORE_PEER_LOCALMSPID=org1MSP
+     - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org1/peer1/msp
+   working_dir: /opt/gopath/src/github.com/hyperledger/fabric/org1
+   command: sh
+   volumes:
+     - ./data/org1:/tmp/hyperledger/org1
+     - ./data/org1/peer1/assets/chaincode:/opt/gopath/src/github.com/hyperledger/fabric-samples/chaincode
+   networks:
+     - fabric-ca
+
+  cli-org2:
+   container_name: cli-org2
+   image: hyperledger/fabric-tools:2.4.1
+   tty: true
+   stdin_open: true
+   environment:
+     - GOPATH=/opt/gopath
+     - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+     - FABRIC_LOGGING_SPEC=DEBUG
+     - CORE_PEER_ID=cli-org2
+     - CORE_PEER_ADDRESS=peer1-org2:7051
+     - CORE_PEER_LOCALMSPID=org2MSP
+     - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org2/peer1/msp
+   working_dir: /opt/gopath/src/github.com/hyperledger/fabric/org2
+   command: sh
+   volumes:
+     - ./data/org2/peer1:/tmp/hyperledger/org2/peer1
+     - ./data/org1/peer1/assets:/tmp/hyperledger/org1/peer1/assets
+     - ./data/org1/peer1/assets/chaincode:/opt/gopath/src/github.com/hyperledger/fabric-samples/chaincode
+     - ./data/org2/admin:/tmp/hyperledger/org2/admin
+   networks:
+     - fabric-ca
+
+  cli-org3:
+   container_name: cli-org3
+   image: hyperledger/fabric-tools:2.4.1
+   tty: true
+   stdin_open: true
+   environment:
+     - GOPATH=/opt/gopath
+     - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+     - FABRIC_LOGGING_SPEC=DEBUG
+     - CORE_PEER_ID=cli-org3
+     - CORE_PEER_ADDRESS=peer1-org3:7051
+     - CORE_PEER_LOCALMSPID=org3MSP
+     - CORE_PEER_MSPCONFIGPATH=/tmp/hyperledger/org3/peer1/msp
+   working_dir: /opt/gopath/src/github.com/hyperledger/fabric/org3
+   command: sh
+   volumes:
+     - ./data/org3/peer1:/tmp/hyperledger/org3/peer1
+     - ./data/org1/peer1/assets:/tmp/hyperledger/org1/peer1/assets
+     - ./data/org1/peer1/assets/chaincode:/opt/gopath/src/github.com/hyperledger/fabric-samples/chaincode
+     - ./data/org3/admin:/tmp/hyperledger/org3/admin
+   networks:
+     - fabric-ca
 
 networks:
   fabric-ca:
