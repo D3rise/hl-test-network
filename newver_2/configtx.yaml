@@ -72,6 +72,9 @@ Capabilities:
 Orderer: &OrdererDefaults
   OrdererType: solo
 
+  Addresses:
+    - orderer-org0:7050
+
   Policies:
     Readers:
       Type: ImplicitMeta
