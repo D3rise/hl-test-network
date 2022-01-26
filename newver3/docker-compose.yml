@@ -77,6 +77,8 @@ services:
       - CORE_PEER_ADDRESS=peer1-org1:7051
       - CORE_PEER_LOCALMSPID=UsersMSP
       - CORE_PEER_MSPCONFIGPATH=/hyperledger/org1/peer1/msp
+    volumes:
+      - ./data/org1/peer1:/hyperledger/org1/peer1
     links:
       - orderer1-org0
     networks:
