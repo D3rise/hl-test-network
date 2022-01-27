@@ -117,6 +117,20 @@ module.exports = class ShopManagerContract extends Contract {
     return user;
   }
 
+  async GetUserOrgMSP(ctx, username) {
+    if (username === "bank") return "BankMSP";
+
+    const users = await this.GetState(ctx, "users");
+    const user = users.find((u) => u.username === username);
+    if (user) return "UsersMSP";
+
+    const shops = await this.GetState(ctx, "shops");
+    const shop = shops.find((s) => s.city === username);
+    if (shop) return "ShopsMSP";
+
+    throw new Error("User not found");
+  }
+
   async LogIn(ctx, secret) {
     const [mspid, login, id] = await this.GetCurrentID(ctx);
     const secretHash = crypto
