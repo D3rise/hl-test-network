@@ -1,0 +1,184 @@
+# Copyright IBM Corp. All Rights Reserved.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+Organizations:
+  - &OrdererOrg
+    Name: Orderer
+    ID: OrdererMSP
+    MSPDir: ./orgs/org0/msp
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('OrdererMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('OrdererMSP.admin')"
+
+    OrdererEndpoints:
+      - orderer:7050
+
+  - &Org1
+    Name: Users
+    ID: UsersMSP
+    MSPDir: ./orgs/org1/msp
+    AnchorPeers:
+      - Host: peer1-org1
+        Port: 9051
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('UsersMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('UsersMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('UsersMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('UsersMSP.member')"
+
+  - &Org2
+    Name: Shops
+    ID: ShopsMSP
+    MSPDir: ./orgs/org2/msp
+    AnchorPeers:
+      - Host: peer1-org2
+        Port: 9052
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('ShopsMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('ShopsMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('ShopsMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('ShopsMSP.member')"
+
+  - &Org3
+    Name: Bank
+    ID: BankMSP
+    MSPDir: ./orgs/org3/msp
+    AnchorPeers:
+      - Host: peer1-org3
+        Port: 9053
+    Policies:
+      Readers:
+        Type: Signature
+        Rule: "OR('BankMSP.member')"
+      Writers:
+        Type: Signature
+        Rule: "OR('BankMSP.member')"
+      Admins:
+        Type: Signature
+        Rule: "OR('BankMSP.admin')"
+      Endorsement:
+        Type: Signature
+        Rule: "OR('BankMSP.member')"
+
+Capabilities:
+  Channel: &ChannelCapabilities
+    V2_0: true
+
+  Orderer: &OrdererCapabilities
+    V2_0: true
+
+  Application: &ApplicationCapabilities
+    V2_0: true
+
+Application: &ApplicationDefaults
+  Organizations:
+
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    LifecycleEndorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+    Endorsement:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Endorsement"
+
+  Capabilities:
+    <<: *ApplicationCapabilities
+
+Orderer: &OrdererDefaults
+  OrdererType: solo
+
+  Addresses:
+    - orderer:7050
+
+  BatchTimeout: 2s
+
+  Organizations:
+
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+    BlockValidation:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+
+Channel: &ChannelDefaults
+  Policies:
+    Readers:
+      Type: ImplicitMeta
+      Rule: "ANY Readers"
+    Writers:
+      Type: ImplicitMeta
+      Rule: "ANY Writers"
+    Admins:
+      Type: ImplicitMeta
+      Rule: "MAJORITY Admins"
+
+  Capabilities:
+    <<: *ChannelCapabilities
+
+Profiles:
+  WSRGenesis:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Organizations:
+        - *OrdererOrg
+      Capabilities: *OrdererCapabilities
+    Consortiums:
+      Cons:
+        Organizations:
+          - *Org1
+          - *Org2
+          - *Org3
+
+  WSR:
+    <<: *ChannelDefaults
+    Consortium: Cons
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - *Org1
+        - *Org2
+        - *Org3
+      Capabilities: *ApplicationCapabilities

@@ -1,0 +1,203 @@
+services:
+  ca-org0:
+    image: hyperledger/fabric-ca:latest
+    environment:
+      - FABRIC_CA_SERVER_HOME=/hl/ca
+      - FABRIC_CA_SERVER_CA_NAME=ca-org0
+      - FABRIC_CA_SERVER_PORT=7051
+    ports:
+      - 7051:7051
+    command: fabric-ca-server start -b admin:adminpw -d
+    volumes:
+      - ./orgs/ca/org0:/hl/ca
+    container_name: ca-org0
+    networks:
+      - fabric
+  
+  ca-org1:
+    image: hyperledger/fabric-ca:latest
+    environment:
+      - FABRIC_CA_SERVER_HOME=/hl/ca
+      - FABRIC_CA_SERVER_CA_NAME=ca-org1
+      - FABRIC_CA_SERVER_PORT=7052
+    ports:
+      - 7052:7052
+    command: fabric-ca-server start -b admin:adminpw -d
+    volumes:
+      - ./orgs/ca/org1:/hl/ca
+    container_name: ca-org1
+    networks:
+      - fabric
+
+  ca-org2:
+    image: hyperledger/fabric-ca:latest
+    environment:
+      - FABRIC_CA_SERVER_HOME=/hl/ca
+      - FABRIC_CA_SERVER_CA_NAME=ca-org2
+      - FABRIC_CA_SERVER_PORT=7053
+    ports:
+      - 7053:7053
+    command: fabric-ca-server start -b admin:adminpw -d
+    volumes:
+      - ./orgs/ca/org2:/hl/ca
+    container_name: ca-org2
+    networks:
+      - fabric
+
+  ca-org3:
+    image: hyperledger/fabric-ca:latest
+    environment:
+      - FABRIC_CA_SERVER_HOME=/hl/ca
+      - FABRIC_CA_SERVER_CA_NAME=ca-org3
+      - FABRIC_CA_SERVER_PORT=7054
+    ports:
+      - 7054:7054
+    command: fabric-ca-server start -b admin:adminpw -d
+    volumes:
+      - "./orgs/ca/org3:/hl/ca"
+    container_name: ca-org3
+    networks:
+      - fabric
+
+  orderer:
+    container_name: orderer
+    image: hyperledger/fabric-orderer:2.4.2
+    environment:
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7050
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/hl/orderer/msp
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=file
+      - ORDERER_GENERAL_BOOTSTRAPFILE=/hl/orderer/genesis.block
+    volumes:
+      - ./orgs/org0/orderer:/hl/orderer
+    ports:
+      - "7050:7050"
+    networks:
+      - fabric
+
+  peer1-org1:
+    container_name: peer1-org1
+    image: hyperledger/fabric-peer:2.4.2
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9051
+      - CORE_PEER_ID=peer1-org1
+      - CORE_PEER_LOCALMSPID=UsersMSP
+      - CORE_PEER_MSPCONFIGPATH=/hl/org/peer1/msp
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=0.0.0.0:9051
+    volumes:
+      - /var/run:/host/var/run
+      - ./orgs/org1:/hl/org
+      - ./orgs/common:/hl/common
+    links:
+      - orderer
+    ports:
+      - "9051:9051"
+    networks:
+      - fabric
+
+  peer1-org2:
+    container_name: peer1-org2
+    image: hyperledger/fabric-peer:2.4.2
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9052
+      - CORE_PEER_ID=peer1-org2
+      - CORE_PEER_LOCALMSPID=ShopsMSP
+      - CORE_PEER_MSPCONFIGPATH=/hl/org/peer1/msp
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=0.0.0.0:9052
+    volumes:
+      - /var/run:/host/var/run
+      - ./orgs/org2:/hl/org
+      - ./orgs/common:/hl/common
+    links:
+      - orderer
+    ports:
+      - "9052:9052"
+    networks:
+      - fabric
+
+  peer1-org3:
+    container_name: peer1-org3
+    image: hyperledger/fabric-peer:2.4.2
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_LISTENADDRESS=0.0.0.0:9053
+      - CORE_PEER_ID=peer1-org3
+      - CORE_PEER_LOCALMSPID=BankMSP
+      - CORE_PEER_MSPCONFIGPATH=/hl/org/peer1/msp
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=0.0.0.0:9053
+    volumes:
+      - /var/run:/host/var/run
+      - ./orgs/org3:/hl/org
+      - ./orgs/common:/hl/common
+    links:
+      - orderer
+    ports:
+      - "9053:9053"
+    networks:
+      - fabric
+
+  cli-org1:
+    container_name: cli-org1
+    image: hyperledger/fabric-tools:2.4.2
+    stdin_open: true
+    tty: true
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_MSPCONFIGPATH=/hl/org/admin/msp
+      - CORE_PEER_ADDRESS=peer1-org1:9051
+      - CORE_PEER_ID=cli-org1
+      - CORE_PEER_LOCALMSPID=UsersMSP
+    working_dir: /hl/common
+    command: sh
+    volumes:
+      - /var/run:/host/var/run
+      - ./orgs/org1:/hl/org
+      - ./orgs/common:/hl/common
+    networks:
+      - fabric
+
+  cli-org2:
+    container_name: cli-org2
+    image: hyperledger/fabric-tools:2.4.2
+    stdin_open: true
+    tty: true
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_MSPCONFIGPATH=/hl/org/admin/msp
+      - CORE_PEER_ADDRESS=peer1-org2:9052
+      - CORE_PEER_ID=cli-org2
+      - CORE_PEER_LOCALMSPID=ShopsMSP
+    working_dir: /hl/common
+    command: sh
+    volumes:
+      - /var/run:/host/var/run
+      - ./orgs/org2:/hl/org
+      - ./orgs/common:/hl/common
+    networks:
+      - fabric
+
+  cli-org3:
+    container_name: cli-org3
+    image: hyperledger/fabric-tools:2.4.2
+    stdin_open: true
+    tty: true
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - CORE_PEER_MSPCONFIGPATH=/hl/org/admin/msp
+      - CORE_PEER_ADDRESS=peer1-org3:9053
+      - CORE_PEER_ID=cli-org3
+      - CORE_PEER_LOCALMSPID=BankMSP
+    working_dir: /hl/common
+    command: sh
+    volumes:
+      - /var/run:/host/var/run
+      - ./orgs/org3:/hl/org
+      - ./orgs/common:/hl/common
+    networks:
+      - fabric
+
+networks:
+  fabric:

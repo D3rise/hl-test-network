@@ -1,0 +1,67 @@
+{
+  "name": "wsr",
+  "version": "1.0.0",
+  "client": {
+    "organization": "Users",
+    "connection": {
+      "timeout": {
+        "peer": {
+          "endorser": "300"
+        }
+      }
+    }
+  },
+  "channels": {
+    "wsr": {
+      "orderers": ["orderer"],
+      "peers": ["peer1-org1", "peer1-org2", "peer1-org3"]
+    }
+  },
+  "orderers": {
+    "orderer": {
+      "url": "grpc://0.0.0.0:7050"
+    }
+  },
+  "organizations": {
+    "Users": {
+      "mspid": "UsersMSP",
+      "peers": ["peer1-org1"],
+      "certificateAuthorities": ["ca-org1"]
+    },
+    "Shops": {
+      "mspid": "ShopsMSP",
+      "peers": ["peer1-org2"],
+      "certificateAuthorities": ["ca-org2"]
+    },
+    "Bank": {
+      "mspid": "BankMSP",
+      "peers": ["peer1-org3"],
+      "certificateAuthorities": ["ca-org3"]
+    }
+  },
+  "peers": {
+    "peer1-org1": {
+      "url": "grpc://0.0.0.0:9051"
+    },
+    "peer1-org2": {
+      "url": "grpc://0.0.0.0:9052"
+    },
+    "peer1-org3": {
+      "url": "grpc://0.0.0.0:9053"
+    }
+  },
+  "certificateAuthorities": {
+    "ca-org1": {
+      "url": "http://0.0.0.0:7052",
+      "caName": "ca-org1"
+    },
+    "ca-org2": {
+      "url": "http://0.0.0.0:7053",
+      "caName": "ca-org2"
+    },
+    "ca-org3": {
+      "url": "http://0.0.0.0:7054",
+      "caName": "ca-org3"
+    }
+  }
+}
