@@ -1,5 +1,0 @@
-General:
-  ListenAddress: 0.0.0.0
-  ListenPort: 7050
-  BootstrapFile: genesis.block
-  LocalMSPID: org0MSP
