@@ -1,6 +1,6 @@
 #!/bin/bash
 docker-compose down
-docker-compose up ca-org0 ca-org1 ca-org2 ca-org3 -d
+docker-compose up -d ca-org0 ca-org1 ca-org2 ca-org3
 sleep 2
 export PATH=$PATH:$PWD/../fabric-bin
 
@@ -8,7 +8,7 @@ IP="0.0.0.0"
 for i in {0..3}
 do
     mkdir orgs/org$i orgs/org$i/msp orgs/org$i/msp/{admincerts,cacerts,users}
-    
+
     ADDRESS="http://admin:adminpw@$IP:705$(expr 1 + $i)"
     fabric-ca-client enroll -u $ADDRESS -H orgs/org$i/admin
 
@@ -37,9 +37,9 @@ mkdir orgs/common
 configtxgen -profile WSRGenesis -channelID syschannel -outputBlock orgs/org0/orderer/genesis.block
 configtxgen -profile WSR -channelID wsr -outputCreateChannelTx orgs/common/wsrchannel.tx
 
-configtxgen -profile WSR -channelID wsr -outputAnchorPeersUpdate orgs/org1/anchors.tx -asOrg Users
-configtxgen -profile WSR -channelID wsr -outputAnchorPeersUpdate orgs/org2/anchors.tx -asOrg Shops
-configtxgen -profile WSR -channelID wsr -outputAnchorPeersUpdate orgs/org3/anchors.tx -asOrg Bank
+configtxgen -profile WSR -channelID wsr -outputAnchorPeersUpdate orgs/common/org1anchors.tx -asOrg Users
+configtxgen -profile WSR -channelID wsr -outputAnchorPeersUpdate orgs/common/org2anchors.tx -asOrg Shops
+configtxgen -profile WSR -channelID wsr -outputAnchorPeersUpdate orgs/common/org3anchors.tx -asOrg Bank
 
 docker-compose up -d
 sleep 2
@@ -50,6 +50,6 @@ do
 done
 
 for i in {1..3}; do
-    docker exec -ti cli-org$i peer channel update -f ../org${i}/anchors.tx -o orderer:7050 -c wsr
+    docker exec -ti cli-org$i peer channel update -f org${i}anchors.tx -o orderer:7050 -c wsr
 done
-    
+
