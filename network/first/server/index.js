@@ -5,9 +5,9 @@ const HOST = "0.0.0.0";
 const PORT = "3000";
 
 const main = async () => {
-  const [ca, gateway] = await profiles.usersProfile();
+  const gateway = await profiles.getUsersAdminGateway();
   const network = await gateway.getNetwork("wsr");
-  const chaincode = await network.getContract("basic");
+  let chaincode;
 
   const listener = async (req, res) => {
     res.setHeader("Content-Type", "application/json");
@@ -20,8 +20,22 @@ const main = async () => {
     const body = JSON.parse(Buffer.concat(buffers).toString());
 
     // get necessary values from body
-    let { Function, Args } = body;
+    let { Function, Args, username, secret, mspid } = body;
     let result;
+
+    if (req.headers.authorization) {
+      try {
+        const username = req.headers.authorization.split(" ")[1];
+        chaincode = await profiles
+          .getGateway(username)
+          .then((g) => g.getNetwork("wsr"))
+          .then((n) => n.getContract("basic"));
+      } catch (e) {
+        return res.end(JSON.stringify({ error: "User is not logged in!" }));
+      }
+    } else {
+      chaincode = network.getContract("basic");
+    }
 
     try {
       switch (req.url) {
@@ -42,16 +56,27 @@ const main = async () => {
           );
           res.end(JSON.stringify(result.toString()));
           break;
+
+        case "/enroll":
+          await profiles.enroll(mspid, username, secret);
+          res.end(JSON.stringify({ result: true, username }));
+          break;
+
+        case "/register":
+          await profiles.registerAndEnroll(mspid, username, secret);
+          res.end(JSON.stringify({ result: true, username }));
+          break;
       }
     } catch (e) {
       res.writeHead(500);
-      console.log(e);
       res.end(JSON.stringify({ error: e.message }));
+      console.log(e);
     }
   };
 
   const server = http.createServer(listener);
   server.listen(PORT, HOST);
+  console.log("Listening on %s:%d", HOST, PORT);
 };
 
 if (require.main == module) {
