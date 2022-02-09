@@ -66,6 +66,10 @@ const main = async () => {
           await profiles.registerAndEnroll(mspid, username, secret);
           res.end(JSON.stringify({ result: true, username }));
           break;
+
+        default:
+          res.writeHead(404);
+          res.end(JSON.stringify({ error: "Not found" }));
       }
     } catch (e) {
       res.writeHead(500);
