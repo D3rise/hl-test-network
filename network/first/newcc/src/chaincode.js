@@ -133,16 +133,10 @@ class ShopManager extends Contract {
   }
 
   async __addItemToArray(ctx, key, item) {
-    let newItem;
-    if (typeof item === "object") {
-      newItem = JSON.stringify(item);
-    } else {
-      newItem = item;
-    }
-
     const array = await this.__getState(ctx, key);
     if (!array) throw new Error("There is no such array in stub!");
-    array.push(newItem);
+
+    array.push(item);
     await this.__putState(ctx, key, array);
   }
 
