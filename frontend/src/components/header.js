@@ -10,7 +10,8 @@ export const Header = () => {
       <h5 style={{ textAlign: "right" }}>
         {user !== "" ? (
           <>
-            Current user: <strong>{user}</strong>
+            Current user: <strong>{user}</strong> |{" "}
+            <Link to="/logout">Log Out</Link>
           </>
         ) : (
           <>Not logged in</>

@@ -16,7 +16,7 @@ export const SignUpPage = () => {
 
   useEffect(() => {
     if (user !== "") return navigate("/");
-  }, []);
+  }, [navigate, user]);
 
   const setAuth = (key, value) => {
     setState((prev) => {
