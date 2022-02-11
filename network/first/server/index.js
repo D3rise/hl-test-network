@@ -18,6 +18,7 @@ const main = async () => {
     res.setHeader("Access-Control-Allow-Methods", "OPTIONS, POST");
     res.setHeader("Access-Control-Allow-Headers", "*");
 
+    console.log(req);
     if (req.method === "OPTIONS") {
       res.writeHead(200);
       return res.end();
