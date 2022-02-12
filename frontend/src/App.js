@@ -13,7 +13,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/" index={true} element={<IndexPage />} />
+        <Route path="/" element={<IndexPage />} />
         <Route path="/logout" element={<LogOutPage />} />
       </Routes>
     </Context.Provider>
